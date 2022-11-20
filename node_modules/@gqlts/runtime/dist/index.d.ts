@@ -1,0 +1,15 @@
+export { createClient } from "./client/createClient";
+export type { ClientOptions } from "./client/createClient";
+export type { FieldsSelection } from "./client/typeSelection";
+export type { NoExtraProperties } from "./types";
+export { generateGraphqlOperation } from "./client/generateGraphqlOperation";
+export type { GraphqlOperation } from "./client/generateGraphqlOperation";
+export { linkTypeMap } from "./client/linkTypeMap";
+export { Observable } from "zen-observable-ts";
+export { createFetcher } from "./fetcher";
+export { ClientError } from "./error";
+export declare const everything: {
+    __scalar: boolean;
+};
+export declare function assertSameVersion(generatedWithVersion: any): void;
+//# sourceMappingURL=index.d.ts.map

@@ -1,0 +1,41 @@
+Get a list of all assets then show them on the website without icons so you know which ones you have
+
+We will group assets for all the different blockchains so it shows as a list imagine:
+
+- ETH:
+-- Ethereum: 1.2 ETH
+-- BSC: 2.3 ETH
+-- Polygon: 0.4 ETH
+
+So you can get a very good idea of what assets you have and where.
+
+1. Get a list of all your assets
+2. Then, one by one check where they are located. So if it's ethereum, we get all the chains with amount > 0 and return
+and object that looks like this:
+
+{
+    assets: [
+        {
+            asset: {
+                name: 'eth',
+                chains: [
+                    {
+                        chain: 'ethereum',
+                        balance: 1.2,
+                    },
+                    {
+                        chain: 'bsc',
+                        balance: 2.3,
+                    },
+                    {
+                        chain: 'polygon',
+                        balance: 0.4,
+                    },
+                ]
+            }
+        }
+    ]
+}
+
+3. Make sure to not count the assets where the amount is zero.
+4. Display that in the website.

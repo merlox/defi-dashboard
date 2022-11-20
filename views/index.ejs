@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeFi Dashboard</title>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+
+        ul {
+            list-style-type: none;
+        }
+
+        .asset {
+            background-color: whitesmoke;
+            padding: 10px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+            border: 1px solid grey;
+        }
+
+        #asset-container {
+            padding-left: 0;
+            max-width: 500px;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Your DeFi Dashboard</h1>
+
+    <p id="loading-assets">Loading assets...</p>
+
+    <ul id="asset-container"></ul>
+
+    <script src="index.js"></script>
+    <script>
+        window.addEventListener('load', async () => {
+            console.log('getting assets')
+            let res = await fetch('/asset-balances')
+            res = await res.json()
+            console.log(res)
+
+            for (let i = 0; i < res.length; i++) {
+                const chains = res[i].asset.chains.map(item => `
+                    <li>
+                        ${res[i].asset.name + ' on ' + item.chain}: ${item.balance}
+                    </li>
+                `)
+                document.querySelector('#asset-container').insertAdjacentHTML('beforeend', `
+                    <li class="asset">
+                        <b>${res[i].asset.name}</b>
+                        <ul>
+                            ${chains}
+                        </ul>
+                    </li>
+                `)
+            }
+
+            document.querySelector('#loading-assets').style.display = 'none'
+        })
+    </script>
+</body>
+</html>
