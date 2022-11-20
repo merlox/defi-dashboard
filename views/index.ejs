@@ -27,41 +27,44 @@
             max-width: 500px;
             margin: auto;
         }
+
+        .header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .title {
+            text-align: center;
+        }
+
+        #loading-assets {
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            .header {
+                gap: 10px;
+                flex-direction: column;
+                font-size: 10pt;
+            }
+        }
     </style>
 </head>
 <body>
-    <h1>Your DeFi Dashboard</h1>
+    <header class="header">
+        <div id="wallet"></div>
+        <w3m-core-button></w3m-core-button>
+        <w3m-modal id="main-modal"></w3m-modal>
+    </header>
+
+    <h1 class="title">Your DeFi Dashboard</h1>
 
     <p id="loading-assets">Loading assets...</p>
 
     <ul id="asset-container"></ul>
 
-    <script src="index.js"></script>
-    <script>
-        window.addEventListener('load', async () => {
-            console.log('getting assets')
-            let res = await fetch('/asset-balances')
-            res = await res.json()
-            console.log(res)
-
-            for (let i = 0; i < res.length; i++) {
-                const chains = res[i].asset.chains.map(item => `
-                    <li>
-                        ${res[i].asset.name + ' on ' + item.chain}: ${item.balance}
-                    </li>
-                `)
-                document.querySelector('#asset-container').insertAdjacentHTML('beforeend', `
-                    <li class="asset">
-                        <b>${res[i].asset.name}</b>
-                        <ul>
-                            ${chains}
-                        </ul>
-                    </li>
-                `)
-            }
-
-            document.querySelector('#loading-assets').style.display = 'none'
-        })
-    </script>
+    <script src="build.js"></script>
 </body>
 </html>

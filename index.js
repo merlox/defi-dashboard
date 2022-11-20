@@ -8,6 +8,7 @@ const walletToCheck = '0x7c5bAe6BC84AE74954Fd5672feb6fB31d2182EC6'
 const port = 8000
 
 app.set('view engine', 'ejs')
+app.use(express.static('dist'))
 
 const getAssetBalances = async () => {
 	const client = createClient({
@@ -79,12 +80,11 @@ app.get('/', (req, res) => {
 })
 
 app.get('/asset-balances', async (req, res) => {
-	console.log('called')
 	const assetsFound = await getAssetBalances()
 
 	res.send(JSON.stringify(assetsFound))
 })
 
-app.listen(port, '0.0.0.0', (req, res) => {
+app.listen(port, '0.0.0.0', () => {
 	console.log(`Listening on localhost:${port}`)
 })
