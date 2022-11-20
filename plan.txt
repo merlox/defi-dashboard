@@ -1,3 +1,15 @@
+Problem
+---
+How much ETH do I have across all the blockchains?
+How much MATIC do I have in every blockchain?
+
+Solution
+---
+Create a dashboard with DefiYield's API to check how much of each asset is in every blockchain,
+grouped by symbol
+
+
+
 Get a list of all assets then show them on the website without icons so you know which ones you have
 
 We will group assets for all the different blockchains so it shows as a list imagine:

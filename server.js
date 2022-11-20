@@ -14,7 +14,7 @@ const getAssetBalances = async walletToCheck => {
 		headers: { 'X-Api-Key': apiKey },
 	})
 
-	const chainIds = [{ "name": "ethereum", "absoluteChainId": "1" }, { "name": "binance", "absoluteChainId": "56" }, { "name": "polygon", "absoluteChainId": "137" }, { "name": "fantom", "absoluteChainId": "250" }, { "name": "avalanche", "absoluteChainId": "43114" }, { "name": "gnosis", "absoluteChainId": "100" }, { "name": "celo", "absoluteChainId": "42220" }, { "name": "moonriver", "absoluteChainId": "1285" }, { "name": "harmony", "absoluteChainId": "1666600000" }, { "name": "heco", "absoluteChainId": "128" }, { "name": "solana", "absoluteChainId": "101" }, { "name": "okx", "absoluteChainId": "66" }, { "name": "cronos", "absoluteChainId": "25" }, { "name": "kucoin", "absoluteChainId": "321" }, { "name": "terra", "absoluteChainId": "columbus-5" }, { "name": "klaytn", "absoluteChainId": "8217" }, { "name": "fuse", "absoluteChainId": "122" }, { "name": "cardano", "absoluteChainId": "1003" }, { "name": "metis", "absoluteChainId": "1088" }, { "name": "cosmos", "absoluteChainId": "2004" }, { "name": "kava", "absoluteChainId": "2005" }, { "name": "osmosis", "absoluteChainId": "2006" }, { "name": "agoric", "absoluteChainId": "2014" }, { "name": "optimism", "absoluteChainId": "10" }, { "name": "sifchain", "absoluteChainId": "2009" }, { "name": "moonbeam", "absoluteChainId": "1284" }, { "name": "juno", "absoluteChainId": "2010" }, { "name": "aurora", "absoluteChainId": "1313161554" }, { "name": "boba", "absoluteChainId": "288" }, { "name": "terra 2.0", "absoluteChainId": "2015" }, { "name": "arbitrum", "absoluteChainId": "42161" }, { "name": "kujira", "absoluteChainId": "2013" }, { "name": "thorchain", "absoluteChainId": "2008" }, { "name": "ronin", "absoluteChainId": "1002" }, { "name": "evmos", "absoluteChainId": "9001" }, { "name": "secret", "absoluteChainId": "2007" }, { "name": "Milkomeda", "absoluteChainId": "2001" }, { "name": "iotex", "absoluteChainId": "1099" }, { "name": "akash", "absoluteChainId": "2012" }, { "name": "stargaze", "absoluteChainId": "2011" }]
+	const chainIds = [ { "name": "ethereum", "id": 1 }, { "name": "binance", "id": 2 }, { "name": "polygon", "id": 3 }, { "name": "fantom", "id": 4 }, { "name": "avalanche", "id": 6 }, { "name": "gnosis", "id": 7 }, { "name": "celo", "id": 8 }, { "name": "moonriver", "id": 9 }, { "name": "harmony", "id": 10 }, { "name": "heco", "id": 11 }, { "name": "solana", "id": 12 }, { "name": "okx", "id": 13 }, { "name": "cronos", "id": 14 }, { "name": "kucoin", "id": 16 }, { "name": "terra", "id": 19 }, { "name": "klaytn", "id": 20 }, { "name": "fuse", "id": 21 }, { "name": "cardano", "id": 22 }, { "name": "metis", "id": 23 }, { "name": "cosmos", "id": 25 }, { "name": "kava", "id": 26 }, { "name": "osmosis", "id": 27 }, { "name": "agoric", "id": 39 }, { "name": "optimism", "id": 17 }, { "name": "sifchain", "id": 33 }, { "name": "moonbeam", "id": 31 }, { "name": "juno", "id": 34 }, { "name": "aurora", "id": 18 }, { "name": "boba", "id": 15 }, { "name": "terra 2.0", "id": 40 }, { "name": "arbitrum", "id": 5 }, { "name": "kujira", "id": 37 }, { "name": "thorchain", "id": 32 }, { "name": "ronin", "id": 24 }, { "name": "evmos", "id": 38 }, { "name": "secret", "id": 28 }, { "name": "Milkomeda", "id": 30 }, { "name": "iotex", "id": 29 }, { "name": "akash", "id": 36 }, { "name": "stargaze", "id": 35 } ]
 	let assetsFound = []
 	let assetNamesFound = []
 
@@ -22,7 +22,7 @@ const getAssetBalances = async walletToCheck => {
 		const result = await client.query({
 			assetBalances: [{
 				walletAddress: walletToCheck,
-				chainId: Number(chainIds[i].absoluteChainId),
+				chainId: Number(chainIds[i].id),
 			}, {
 				assets: {
 					asset: {
@@ -52,8 +52,8 @@ const getAssetBalances = async walletToCheck => {
 					})
 				} else {
 					// Asset was found and we gotta add chainBalances to the asset
-					const index = assetsFound.indexOf(selected.asset.symbol)
-					assetsFound[index].chains.push({
+					const index = assetsFound.map(assetObject => assetObject.asset.symbol).indexOf(selected.asset.symbol)
+					assetsFound[index].asset.chains.push({
 						chain: chainIds[i].name,
 						balance: selected.balance,
 					})

@@ -55,7 +55,7 @@ const getAssets = async wallet => {
     console.log('assets received')
 
     for (let i = 0; i < res.length; i++) {
-        const chains = res[i].asset.chains.map(item => `
+        const chainsArray = res[i].asset.chains.map(item => `
             <li>
                 ${item.chain}: ${item.balance} ${res[i].asset.symbol}
             </li>
@@ -64,7 +64,7 @@ const getAssets = async wallet => {
             <li class="asset">
                 <b>${res[i].asset.symbol}</b>
                 <ul>
-                    ${chains}
+                    ${chainsArray.join(' ')}
                 </ul>
             </li>
         `)
