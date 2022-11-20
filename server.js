@@ -1,16 +1,14 @@
 import { createClient } from '@defiyield-app/sdk'
 import express from 'express'
-import ejs from 'ejs'
 const app = express()
 const apiKey = '715530d4-db80-4713-bb6d-8b60cc9aba09'
 const apiUrl = 'https://public-api.defiyield.app/graphql/'
-const walletToCheck = '0x7c5bAe6BC84AE74954Fd5672feb6fB31d2182EC6'
 const port = 8000
 
 app.set('view engine', 'ejs')
 app.use(express.static('dist'))
 
-const getAssetBalances = async () => {
+const getAssetBalances = async walletToCheck => {
 	const client = createClient({
 		url: apiUrl,
 		headers: { 'X-Api-Key': apiKey },
@@ -45,7 +43,7 @@ const getAssetBalances = async () => {
 
 					assetsFound.push({
 						asset: {
-							name: selected.asset.symbol,
+							symbol: selected.asset.symbol,
 							chains: [{
 								chain: chainIds[i].name,
 								balance: selected.balance,
@@ -61,8 +59,6 @@ const getAssetBalances = async () => {
 					})
 				}
 			}
-			// console.log('assets found', JSON.stringify(assetNamesFound, null, 4))
-			// Add every asset to assetsFound + add the asset with the blockchain
 		}
 	}
 	return assetsFound
@@ -79,8 +75,8 @@ app.get('/', (req, res) => {
 	res.render('index')
 })
 
-app.get('/asset-balances', async (req, res) => {
-	const assetsFound = await getAssetBalances()
+app.get('/asset-balances/:wallet', async (req, res) => {
+	const assetsFound = await getAssetBalances(req.params.wallet)
 
 	res.send(JSON.stringify(assetsFound))
 })
