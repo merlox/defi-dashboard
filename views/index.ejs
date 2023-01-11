@@ -24,6 +24,9 @@
 
         #asset-container {
             padding-left: 0;
+        }
+
+        .page {
             max-width: 500px;
             margin: auto;
         }
@@ -48,6 +51,58 @@
             text-align: center;
         }
 
+        #net-worth-container {
+            display: none;
+        }
+
+        #loading-positions, #staking-positions, #staking-positions-title {
+            display: none;
+        }
+
+        #staking-positions {
+            text-align: center;
+            max-width: 500px;
+            margin: auto;
+            padding-left: 0;
+        }
+
+        .align-center {
+            text-align: center;
+        }
+
+        .defi-buttons {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .defi-buttons button {
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 12pt;
+            cursor: pointer;
+            background-color: white;
+            border: 1px solid #47a1ff;
+            color: #47a1ff;
+        }
+
+        .defi-buttons button:first-child {
+            margin-right: 20px;
+        }
+
+        .defi-buttons button:hover {
+            transform: scale(1.1);
+        }
+
+        .defi-buttons button.selected {
+            background-color: #47a1ff;
+            color: white;
+            border: none;
+        }
+
+        .opportunities-page {
+            display: none;
+        }
+
         @media (max-width: 600px) {
             .header {
                 gap: 10px;
@@ -58,18 +113,35 @@
     </style>
 </head>
 <body>
-    <header class="header">
-        <div id="wallet"></div>
-        <w3m-core-button></w3m-core-button>
-        <w3m-modal id="main-modal"></w3m-modal>
-    </header>
+    <div class="defi-buttons">
+        <button type="button" class="selected" data-defi="dashboard">Your DeFi Dashboard</button>
+        <button type="button" data-defi="opportunities">DeFi Opportunities</button>
+    </div>
 
-    <h1 class="title">Your DeFi Dashboard</h1>
+    <div class="dashboard-page page">
+        <h1 class="title">Your DeFi Dashboard</h1>
+        
+        <header class="header">
+            <div id="wallet"></div>
+            <w3m-core-button></w3m-core-button>
+            <w3m-modal id="main-modal"></w3m-modal>
+        </header>
+    
+        <p id="connect-message">Connect wallet to see your assets</p>
+        <p id="loading-assets">Loading assets this may take a while, checking 35 blockchains...</p>
 
-    <p id="connect-message">Connect wallet to see your assets</p>
-    <p id="loading-assets">Loading assets this may take a while, checking 35 blockchains...</p>
+        <h3 class="align-center" id="net-worth-container">Net worth: $<span id="net-worth"></span></h3>
+        <ul id="asset-container"></ul>
 
-    <ul id="asset-container"></ul>
+        <p id="loading-positions" class="align-center">Loading positions from 151 protocols, this will take a while...</p>
+
+        <h3 class="align-center" id="staking-positions-title">Staking positions</h3>
+        <ul id="staking-positions"></ul>
+    </div>
+
+    <div class="opportunities-page page">
+        <h1 class="title">DeFi Staking Opportunities</h1>
+    </div>
 
     <script src="build.js"></script>
 </body>

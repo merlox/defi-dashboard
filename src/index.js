@@ -34,13 +34,20 @@ const setupWallet = async () => {
             document.querySelector('#asset-container').innerHTML = ''
             document.querySelector('#loading-assets').style.display = 'inherit'
             document.querySelector('#connect-message').style.display = 'none'
-            await getAssets(change.address)
+            document.querySelector('#loading-positions').style.display = 'none'
+            await getAssets('0xC36442b4a4522E871399CD717aBDD847Ab11FE88')
+            // await getAssets(change.address)
+            document.querySelector('#loading-positions').style.display = 'inherit'
+            await getPositions('0xC36442b4a4522E871399CD717aBDD847Ab11FE88')
+            // await getPositions(change.address)
+            document.querySelector('#loading-positions').style.display = 'none'
             document.querySelector('#connect-message').style.display = 'none'
             document.querySelector('#loading-assets').style.display = 'none'
         } else {
             document.querySelector('#connect-message').style.display = 'inherit'
             document.querySelector('#loading-assets').style.display = 'none'
             document.querySelector('#asset-container').innerHTML = ''
+            document.querySelector('#loading-positions').style.display = 'none'
         }
     })
 
@@ -54,10 +61,14 @@ const getAssets = async wallet => {
     res = await res.json()
     console.log('assets received')
 
+    let totalUSD = 0
+
     for (let i = 0; i < res.length; i++) {
+        const usd = res[i].asset.usd.toFixed(3) == 0 ? 0 : Number(res[i].asset.usd.toFixed(3))
+        totalUSD += res[i].asset.usd
         const chainsArray = res[i].asset.chains.map(item => `
             <li>
-                ${item.chain}: ${item.balance} ${res[i].asset.symbol}
+                ${item.chain}: ${item.balance} ${res[i].asset.symbol} ($${usd})
             </li>
         `)
         document.querySelector('#asset-container').insertAdjacentHTML('beforeend', `
@@ -69,8 +80,50 @@ const getAssets = async wallet => {
             </li>
         `)
     }
+
+    document.querySelector('#net-worth-container').style.display = 'block'
+    document.querySelector('#net-worth').innerHTML = totalUSD.toFixed(3)
+}
+
+const getPositions = async wallet => {
+    console.log('getting positions')
+    const res = await fetch(`/positions/${wallet}`)
+    const positionsReceived = await res.json()
+    let html = ''
+
+    console.log('positions received', positionsReceived)
+
+    if (positionsReceived.length == 0) {
+        html = "You don't have any positions right now"
+    } else {
+        html = positionsReceived.map(pos => {
+            return `<li class="position asset">${pos.protocol}: ${pos.total.toFixed(5)}</li>`
+        }).join('')
+    }
+
+    document.querySelector('#staking-positions-title').style.display = 'inherit'
+    document.querySelector('#staking-positions').style.display = 'inherit'
+    document.querySelector('#staking-positions').innerHTML = html
 }
 
 window.addEventListener('load', () => {
     setupWallet()
+})
+
+document.querySelectorAll('.defi-buttons button').forEach(button => {
+    button.addEventListener('click', e => {
+        [...document.querySelectorAll('.defi-buttons button')].map(b => b.className = '')
+        e.target.className = 'selected'
+
+        switch (e.target.dataset.defi) {
+            case 'dashboard':
+                document.querySelector('.dashboard-page').style.display = 'inherit'
+                document.querySelector('.opportunities-page').style.display = 'none'
+                break
+            case 'opportunities':
+                document.querySelector('.dashboard-page').style.display = 'none'
+                document.querySelector('.opportunities-page').style.display = 'inherit'
+                break
+        }
+    })
 })

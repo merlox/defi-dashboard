@@ -8,6 +8,39 @@ const port = 8000
 app.set('view engine', 'ejs')
 app.use(express.static('dist'))
 
+const getPositions = async walletToCheck => {
+	const client = createClient({
+		url: apiUrl,
+		headers: { 'X-Api-Key': apiKey },
+	})
+	const protocols = ["0VIX","AuraFinance","StakeLy","AaveV2","AaveV3","Abracadabra","ACryptoS","AgoricStaking","AkashStaking","AlchemixV2","AlpacaFinance","ApeSwap","ArrakisFinance","AutoFarm","BabySwap","Badger","BalancerV1","BalancerV2","Bancor","Bastion","Beefy","BeethovenX","BeltFinance","BenQI","Biswap","Blizz","Blueshift","BNBStaking","CafeSwap","CardanoStaking","Channels","CheesecakeSwap","CherrySwap","Compound","CompoundV3","Convex","CosmosStaking","CREAMFinance","Crescent","Crypto.comDeFiSwap","CubFinance","Curve","DefiKingdoms","dForce","Dfyn","DODO","Elk","EllipsisFinance","Euler","EvmosStaking","EvoDefi","FilDa","Frax","Gearbox","GeistFinance","Gmx","GooseFinance","Hubble","IronBank","IronFinance","JunoStaking","JunoSwap","KavaCDP","KavaLend","KavaStaking","KavaSwap","KlaySwap","KnightSwap","KujiraStaking","KyberSwap","Lido","LiquidDriver","Liquity","LoopMarket","MMFinance","MMFinance","MakerDAO","Marinade","MarsEcosystem","MDEX","Meld","Minswap","MojitoSwap","Moola","Moonwell","MuesliSwap","NereusFinance","Netswap","NexusMutual","OccamX","OlympusDAO","OlympusPro","Orca","Osmosis","OsmosisStaking","PaintSwap","PancakeSwap","Pangolin","PlatypusFinance","PolygonStaking","QiDao","Quarry","Quickswap","Raydium","RocketPool","Rune","Saber","SashimiSwap","SecretStaking","SifchainStaking","SolanaStaking","Solend","SpiritSwap","SpookySwap","Stader","Stakewise","Stargate","StargazeStaking","Strike","SundaeSwap","SushiSwap","Swapr","Synapse","Synthetix","Tectonic","Terra2.0Staking","TerraStaking","ThorLiquidity","ThorStaking","Tokemak","Tomb.finance","TraderJoe","Tranchess","TreeDefi","Trisolaris","Uniswap","UniswapV3","VVS","Velodrome","Venus","ViperSwap","VyFinance","WaultFinance","WePiggy","WingRiders","WombatExchange","Wonderland","YearnV1","YearnV2","YelFinance","YetiFinance","Zenlink"]
+	let positionsFound = []
+
+	console.log('walletToCheck', walletToCheck)
+
+	for (let i = 0; i < protocols.length; i++) {
+		const result = await client.query({
+			protocolBalance: [{
+				balances: {
+					walletAddress: walletToCheck,
+					chainIds: 1,
+					protocolName: protocols[i],
+				},
+			}, {
+				total: true,
+			}],
+		})
+
+		if (result.data.protocolBalance.length > 0 && result.data.protocolBalance[0].total > 0) {
+			positionsFound.push({
+				protocol: protocols[i],
+				total: result.data.protocolBalance[0].total,
+			})
+		}
+	}
+	return positionsFound
+}
+
 const getAssetBalances = async walletToCheck => {
 	const client = createClient({
 		url: apiUrl,
@@ -31,6 +64,7 @@ const getAssetBalances = async walletToCheck => {
 						symbol: true,
 					},
 					balance: true,
+					total: true,
 				}
 			}],
 		})
@@ -47,7 +81,8 @@ const getAssetBalances = async walletToCheck => {
 							chains: [{
 								chain: chainIds[i].name,
 								balance: selected.balance,
-							}]
+							}],
+							usd: selected.total,
 						}
 					})
 				} else {
@@ -79,6 +114,12 @@ app.get('/asset-balances/:wallet', async (req, res) => {
 	const assetsFound = await getAssetBalances(req.params.wallet)
 
 	res.send(JSON.stringify(assetsFound))
+})
+
+app.get('/positions/:wallet', async (req, res) => {
+	const positionsFound = await getPositions(req.params.wallet)
+
+	res.send(JSON.stringify(positionsFound))
 })
 
 app.listen(port, '0.0.0.0', () => {
