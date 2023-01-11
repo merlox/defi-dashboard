@@ -946,10 +946,10 @@
     stream-browserify "^3.0.0"
     util "^0.12.4"
 
-"@defiyield-app/sdk@^1.0.6":
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/@defiyield-app/sdk/-/sdk-1.0.6.tgz#b8699f7e214e68244d837f28d9148dc70ab793ba"
-  integrity sha512-EjUzRVEImz0Uy2IWw2OovB4dvTgfIqRS72049RoCNetij6Fflr9lGmjc8ATcVyWQUhJL531oswIp5VV18l2t3A==
+"@defiyield-app/sdk@^1.0.7":
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/@defiyield-app/sdk/-/sdk-1.0.7.tgz#84e091fbdc84302be39ca7eb33a3a070765af305"
+  integrity sha512-2YDAOAl865Z2mRA/Fl0PYzmSe0ExSMox364b3QzWWpEge3hyTXvvgEv65eOgJG94YYiFMblUE6qyM7pSe6SaLA==
   dependencies:
     "@gqlts/runtime" "^3.2.8"
     graphql "^16.5.0"

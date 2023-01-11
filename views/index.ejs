@@ -103,6 +103,10 @@
             display: none;
         }
 
+        .staking-opportunities-table {
+            width: 100%;
+        }
+
         @media (max-width: 600px) {
             .header {
                 gap: 10px;
@@ -120,7 +124,7 @@
 
     <div class="dashboard-page page">
         <h1 class="title">Your DeFi Dashboard</h1>
-        
+
         <header class="header">
             <div id="wallet"></div>
             <w3m-core-button></w3m-core-button>
@@ -141,6 +145,14 @@
 
     <div class="opportunities-page page">
         <h1 class="title">DeFi Staking Opportunities</h1>
+        <table class="staking-opportunities-table">
+            <tr>
+                <th>Market</th>
+                <th>TLV</th>
+                <th>Rewards</th>
+                <th>APR</th>
+            </tr>
+        </table>
     </div>
 
     <script src="build.js"></script>

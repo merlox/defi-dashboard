@@ -99,6 +99,37 @@ const getAssetBalances = async walletToCheck => {
 	return assetsFound
 }
 
+// Returns the top 100 opportunities on the Ethereum blockchain for simplicity
+const getDefiOpportunities = async () => {
+	const client = createClient({
+		url: apiUrl,
+		headers: { 'X-Api-Key': apiKey },
+	})
+	let opportunitiesFound = []
+
+	const result = await client.query({
+		opportunities: [{
+			first: 100,
+		}, {
+			farm: {
+				slug: true,
+				logo: true,
+			},
+			totalValueLocked: true,
+			tokens: {
+				rewards: {
+					displayName: true,
+				}
+			},
+			apr: true,
+		}]
+	})
+
+	console.log('result', result)
+
+	return opportunitiesFound
+}
+
 app.use('*', (req, res, next) => {
 	// Logger
 	let time = new Date()
@@ -124,4 +155,5 @@ app.get('/positions/:wallet', async (req, res) => {
 
 app.listen(port, '0.0.0.0', () => {
 	console.log(`Listening on localhost:${port}`)
+	getDefiOpportunities()
 })
