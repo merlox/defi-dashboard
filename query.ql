@@ -31,3 +31,10 @@ query {
     }
   }
 }
+
+
+opportunities[0].farm.slug (market name)
+opportunities[0].farm.logo
+opportunities[0].totalValueLocked.toFixed(3) (format Billions and Millions and K thousand)
+opportunities[0].tokens.rewards[0].displayName
+opportunities[0].apr
