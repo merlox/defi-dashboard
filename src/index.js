@@ -106,6 +106,54 @@ const getPositions = async wallet => {
     document.querySelector('#staking-positions').innerHTML = html
 }
 
+const nFormatter = (num, digits) => {
+	const lookup = [
+		{ value: 1, symbol: "" },
+		{ value: 1e3, symbol: "k" },
+		{ value: 1e6, symbol: "M" },
+		{ value: 1e9, symbol: "G" },
+		{ value: 1e12, symbol: "T" },
+		{ value: 1e15, symbol: "P" },
+		{ value: 1e18, symbol: "E" }
+	];
+	const rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
+	var item = lookup.slice().reverse().find(function (item) {
+		return num >= item.value;
+	});
+	return item ? (num / item.value).toFixed(digits).replace(rx, "$1") + item.symbol : "0";
+}
+
+const getOpportunities = async () => {
+    console.log('Getting opportunities')
+    const res = await fetch('/opportunities')
+    const opportunities = await res.json()
+    let html = ''
+
+    console.log()
+    console.log('opportunities', opportunities)
+    console.log()
+
+    opportunities.map(item => {
+        html += `
+            <tr>
+                <td>
+                    <img src="${item.logo}" />
+                    <span>${item.slug}</span>
+                </td>
+                <td>${nFormatter(item.totalValueLocked, 2)}</td>
+                <td>${item.rewards}</td>
+                <td>${(item.apr * 100).toFixed(3) + '%'}</td>
+            </tr>
+        `
+    })
+
+    console.log()
+    console.log('html', html)
+    console.log()
+
+    document.querySelector('#opportunities-items').innerHTML = html
+}
+
 window.addEventListener('load', () => {
     setupWallet()
 })
@@ -123,6 +171,7 @@ document.querySelectorAll('.defi-buttons button').forEach(button => {
             case 'opportunities':
                 document.querySelector('.dashboard-page').style.display = 'none'
                 document.querySelector('.opportunities-page').style.display = 'inherit'
+                getOpportunities()
                 break
         }
     })

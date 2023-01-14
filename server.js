@@ -105,11 +105,10 @@ const getDefiOpportunities = async () => {
 		url: apiUrl,
 		headers: { 'X-Api-Key': apiKey },
 	})
-	let opportunitiesFound = []
 
 	const result = await client.query({
 		opportunities: [{
-			first: 100,
+			first: 50,
 		}, {
 			farm: {
 				slug: true,
@@ -125,9 +124,17 @@ const getDefiOpportunities = async () => {
 		}]
 	})
 
-	console.log('result', result)
+	const resultsFormatted = result.data.opportunities.map(item => {
+		return {
+			slug: item.farm.slug,
+			logo: item.farm.logo,
+			totalValueLocked: item.totalValueLocked,
+			rewards: item.tokens.rewards.map(reward => reward.displayName).join(' + '),
+			apr: item.apr,
+		}
+	})
 
-	return opportunitiesFound
+	return resultsFormatted
 }
 
 app.use('*', (req, res, next) => {
@@ -153,7 +160,12 @@ app.get('/positions/:wallet', async (req, res) => {
 	res.send(JSON.stringify(positionsFound))
 })
 
+app.get('/opportunities', async (req, res) => {
+	const opportunities = await getDefiOpportunities()
+
+	res.send(JSON.stringify(opportunities))
+})
+
 app.listen(port, '0.0.0.0', () => {
 	console.log(`Listening on localhost:${port}`)
-	getDefiOpportunities()
 })

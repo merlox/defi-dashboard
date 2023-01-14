@@ -1,53 +1,31 @@
-Problem
----
-How much ETH do I have across all the blockchains?
-How much MATIC do I have in every blockchain?
+- Get the function getDefiOpportunities done in the server
 
-Solution
----
-Create a dashboard with DefiYield's API to check how much of each asset is in every blockchain,
-grouped by symbol
+Request opportunities from the API:
 
-
-
-Get a list of all assets then show them on the website without icons so you know which ones you have
-
-We will group assets for all the different blockchains so it shows as a list imagine:
-
-- ETH:
--- Ethereum: 1.2 ETH
--- BSC: 2.3 ETH
--- Polygon: 0.4 ETH
-
-So you can get a very good idea of what assets you have and where.
-
-1. Get a list of all your assets
-2. Then, one by one check where they are located. So if it's ethereum, we get all the chains with amount > 0 and return
-and object that looks like this:
-
-{
-    assets: [
-        {
-            asset: {
-                name: 'eth',
-                chains: [
-                    {
-                        chain: 'ethereum',
-                        balance: 1.2,
-                    },
-                    {
-                        chain: 'bsc',
-                        balance: 2.3,
-                    },
-                    {
-                        chain: 'polygon',
-                        balance: 0.4,
-                    },
-                ]
-            }
+opportunities: [{
+    first: 50,
+}, {
+    farm: {
+        slug: true,
+        logo: true,
+    },
+    totalValueLocked: true,
+    tokens: {
+        rewards: {
+            displayName: true,
         }
-    ]
-}
+    },
+    apr: true,
+}]
 
-3. Make sure to not count the assets where the amount is zero.
-4. Display that in the website.
+Then format it properly by going through the array like so:
+
+const resultsFormatted = result.data.opportunities.map(item => {
+		return {
+			slug: item.farm.slug,
+			logo: item.farm.logo,
+			totalValueLocked: item.totalValueLocked,
+			rewards: item.tokens.rewards.map(reward => reward.displayName).join(' + '),
+			apr: item.apr,
+		}
+	})
