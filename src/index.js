@@ -60,17 +60,25 @@ const getAssets = async wallet => {
     let res = await fetch(`/asset-balances/${wallet}`)
     res = await res.json()
     console.log('assets received')
+    if (res.error) {
+        console.log(res.error)
+        return alert(res.error)
+    }
 
     let totalUSD = 0
 
     for (let i = 0; i < res.length; i++) {
-        const usd = res[i].asset.usd.toFixed(3) == 0 ? 0 : Number(res[i].asset.usd.toFixed(3))
+        let usd = res[i].asset.usd.toFixed(3) == 0 ? 0 : Number(res[i].asset.usd.toFixed(3))
         totalUSD += res[i].asset.usd
-        const chainsArray = res[i].asset.chains.map(item => `
-            <li>
-                ${item.chain}: ${item.balance} ${res[i].asset.symbol} ($${usd})
-            </li>
-        `)
+        const chainsArray = res[i].asset.chains.map(item => {
+            let formattedBalance = item.balance.toFixed(3) == 0 ? 0 : Number(item.balance.toFixed(3))
+            if (formattedBalance == 0) formattedBalance = '~0'
+            return `
+                <li>
+                    ${item.chain}: ${formattedBalance} ${res[i].asset.symbol} (${usd == 0 ? '~$0' : '$' + usd})
+                </li>
+            `
+        })
         document.querySelector('#asset-container').insertAdjacentHTML('beforeend', `
             <li class="asset">
                 <b>${res[i].asset.symbol}</b>
@@ -86,9 +94,13 @@ const getAssets = async wallet => {
 }
 
 const getPositions = async wallet => {
-    console.log('getting positions')
+    console.log('getting positions x')
     const res = await fetch(`/positions/${wallet}`)
     const positionsReceived = await res.json()
+    if (positionsReceived.error) {
+        console.log(positionsReceived.error)
+        return alert(positionsReceived.error)
+    }
     let html = ''
 
     console.log('positions received', positionsReceived)
@@ -97,7 +109,8 @@ const getPositions = async wallet => {
         html = "You don't have any positions right now"
     } else {
         html = positionsReceived.map(pos => {
-            return `<li class="position asset">${pos.protocol}: ${pos.total.toFixed(5)}</li>`
+            const total = pos.total.toFixed(5) == 0 ? '~0' : pos.total.toFixed(5)
+            return `<li class="position asset">${pos.protocol}: ${total}</li>`
         }).join('')
     }
 
@@ -111,7 +124,7 @@ const nFormatter = (num, digits) => {
 		{ value: 1, symbol: "" },
 		{ value: 1e3, symbol: "k" },
 		{ value: 1e6, symbol: "M" },
-		{ value: 1e9, symbol: "B" },
+		{ value: 1e9, symbol: "G" },
 		{ value: 1e12, symbol: "T" },
 		{ value: 1e15, symbol: "P" },
 		{ value: 1e18, symbol: "E" }
@@ -127,6 +140,10 @@ const getOpportunities = async () => {
     console.log('Getting opportunities')
     const res = await fetch('/opportunities')
     const opportunities = await res.json()
+    if (opportunities.error) {
+        console.log(opportunities.error)
+        return alert(opportunities.error)
+    }
     let html = ''
 
     console.log()
@@ -140,16 +157,12 @@ const getOpportunities = async () => {
                     <img src="${item.logo}" />
                     <span>${item.slug}</span>
                 </td>
-                <td>${nFormatter(item.totalValueLocked, 2)}</td>
-                <td>${item.rewards}</td>
-                <td>${(item.apr * 100).toFixed(3) + '%'}</td>
+                <td class="opportunities-item-tlv">${nFormatter(item.totalValueLocked, 2)}</td>
+                <td class="opportunities-item-rewards">${item.rewards}</td>
+                <td class="opportunities-item-apr">${(item.apr * 100).toFixed(3) + '%'}</td>
             </tr>
         `
     })
-
-    console.log()
-    console.log('html', html)
-    console.log()
 
     document.querySelector('#opportunities-items').innerHTML = html
 }
