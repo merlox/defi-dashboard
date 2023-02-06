@@ -129,6 +129,22 @@ const getDefiOpportunities = async () => {
 		headers: { 'X-Api-Key': apiKey },
 	})
 
+	/*
+		chains = [{id, abbr}]
+	*/
+	let chains = []
+	try {
+		const chainsQuery = await client.query({
+			chains: {
+				id: true,
+				abbr: true,
+			}
+		})
+		chains = chainsQuery.data.chains
+	} catch (e) {
+		return { error: e }
+	}
+
 	let result = null
 	try {
 		result = await client.query({
@@ -138,10 +154,15 @@ const getDefiOpportunities = async () => {
 				farm: {
 					slug: true,
 					logo: true,
+					categories: true,
 				},
+				chainId: true,
 				totalValueLocked: true,
 				tokens: {
 					rewards: {
+						displayName: true,
+					},
+					deposits: {
 						displayName: true,
 					}
 				},
@@ -153,10 +174,14 @@ const getDefiOpportunities = async () => {
 	}
 
 	const resultsFormatted = result.data.opportunities.map(item => {
+		const chainFound = chains.find(chain => chain.id == item.chainId)
 		return {
 			slug: item.farm.slug,
+			chain: chainFound.abbr,
+			category: item.farm.categories[0],
 			logo: item.farm.logo,
 			totalValueLocked: item.totalValueLocked,
+			deposits: item.tokens.deposits.map(deposits => deposits.displayName).join(' + '),
 			rewards: item.tokens.rewards.map(reward => reward.displayName).join(' + '),
 			apr: item.apr,
 		}
