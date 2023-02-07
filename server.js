@@ -1,7 +1,7 @@
 import { createClient } from '@defiyield-app/sdk'
 import express from 'express'
 const app = express()
-const apiKey = '715530d4-db80-4713-bb6d-8b60cc9aba09'
+const apiKey = '9c7143f3-a206-4829-b487-d4960d422edb'
 const apiUrl = 'https://public-api.defiyield.app/graphql/'
 const port = 8000
 
@@ -29,6 +29,18 @@ const getPositions = async walletToCheck => {
 				},
 			}, {
 				total: true,
+				chains: {
+					positions: {
+						supplied: {
+							amount: true,
+							value: true,
+							tvl: true,
+							token: {
+								displayName: true,
+							}
+						}
+					},
+				},
 			}],
 		}))
 	}
@@ -37,16 +49,36 @@ const getPositions = async walletToCheck => {
 	try {
 		results = await Promise.all(queries)
 	} catch (e) {
+		console.log('error', e)
 		return { error: e }
 	}
 
 	for (let i = 0; i < results.length; i++) {
 		const result = results[i]
+		console.log('result', JSON.stringify(result))
 		if (result.data.protocolBalance.length > 0 && result.data.protocolBalance[0].total > 0) {
-			positionsFound.push({
-				protocol: protocols[i],
-				total: result.data.protocolBalance[0].total,
-			})
+			const total = result.data.protocolBalance[0].total
+			// Not all protocols have positions
+			if (result.data.protocolBalance[0].chains && result.data.protocolBalance[0].chains.length > 0) {
+				positionsFound.push({
+					protocol: protocols[i],
+					total,
+					positions: result.data.protocolBalance[0].chains[0].positions.map(posi => {
+						return {
+							tokens: posi.supplied.map(sup => sup.token.displayName).join('/'),
+							balance: posi.supplied[0].amount,
+							poolShare: posi.supplied[0].amount * 100 / posi.supplied[0].tvl,
+							usd: posi.supplied[0].value,
+						}
+					}),
+				})
+			} else {
+				positionsFound.push({
+					protocol: protocols[i],
+					total,
+					positions: null,
+				})
+			}
 		}
 	}
 	return positionsFound

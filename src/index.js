@@ -38,7 +38,8 @@ const setupWallet = async () => {
             await getAssets('0xC36442b4a4522E871399CD717aBDD847Ab11FE88')
             // await getAssets(change.address)
             document.querySelector('#loading-positions').style.display = 'inherit'
-            await getPositions('0xC36442b4a4522E871399CD717aBDD847Ab11FE88')
+            await getPositions('0x7c5bAe6BC84AE74954Fd5672feb6fB31d2182EC6')
+            //await getPositions(change.address)
             // await getPositions(change.address)
             document.querySelector('#loading-positions').style.display = 'none'
             document.querySelector('#connect-message').style.display = 'none'
@@ -110,7 +111,36 @@ const getPositions = async wallet => {
     } else {
         html = positionsReceived.map(pos => {
             const total = pos.total.toFixed(5) == 0 ? '~0' : pos.total.toFixed(5)
-            return `<li class="position asset">${pos.protocol}: ${total}</li>`
+            return `<li class="position asset">
+                <p>${pos.protocol}: $${total}</p>
+                <table style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th>Tokens</th>
+                            <th>Balance</th>
+                            <th>Share</th>
+                            <th>USD</th>
+                        </tr>                    
+                    </thead>
+
+                    <tbody>
+                    ${pos.positions.map(p => {
+                        console.log()
+                        console.log(p)
+                        console.log()
+                        const balance = p.balance.toFixed(5) == 0 ? '~0' : p.balance.toFixed(5)
+                        const share = p.poolShare.toFixed(5) == 0 ? '~0' : p.poolShare.toFixed(5)
+                        const usd = p.usd.toFixed(5) == 0 ? '~$0' : '$' + p.usd.toFixed(5)
+                        return `<tr>
+                                <td>${p.tokens}</td>
+                                <td>${balance}</td>
+                                <td>${share}%</td>
+                                <td>${usd}</td>
+                            </tr>`
+                    }).join('')}
+                    </tbody>
+                </table>
+            </li>`
         }).join('')
     }
 
